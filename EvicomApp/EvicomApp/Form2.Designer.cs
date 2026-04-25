@@ -46,15 +46,15 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -200,7 +200,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.BackgroundImage = global::EvicomApp.Properties.Resources.ekle;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox1.Location = new System.Drawing.Point(692, 6);
             this.pictureBox1.Name = "pictureBox1";
@@ -243,6 +243,13 @@
             this.tabPage1.Text = "Konut Kaydı";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(816, 384);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(127, 26);
+            this.textBox3.TabIndex = 30;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.button2);
@@ -260,12 +267,49 @@
             this.tabPage2.Text = "İlan";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // textBox3
+            // button2
             // 
-            this.textBox3.Location = new System.Drawing.Point(816, 384);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(127, 26);
-            this.textBox3.TabIndex = 30;
+            this.button2.Location = new System.Drawing.Point(743, 429);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(152, 81);
+            this.button2.TabIndex = 31;
+            this.button2.Text = "İlan Ver";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label8.Location = new System.Drawing.Point(719, 89);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(63, 22);
+            this.label8.TabIndex = 30;
+            this.label8.Text = "Başlık:";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(721, 114);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(200, 26);
+            this.textBox5.TabIndex = 31;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(721, 202);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(200, 28);
+            this.comboBox2.TabIndex = 29;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label5.Location = new System.Drawing.Point(719, 177);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 22);
+            this.label5.TabIndex = 28;
+            this.label5.Text = "Konut:";
             // 
             // label7
             // 
@@ -288,50 +332,6 @@
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(200, 26);
             this.numericUpDown2.TabIndex = 27;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label5.Location = new System.Drawing.Point(719, 177);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(62, 22);
-            this.label5.TabIndex = 28;
-            this.label5.Text = "Konut:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(721, 202);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(200, 28);
-            this.comboBox2.TabIndex = 29;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label8.Location = new System.Drawing.Point(719, 89);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 22);
-            this.label8.TabIndex = 30;
-            this.label8.Text = "Başlık:";
-            // 
-            // textBox5
-            // 
-            this.textBox5.Location = new System.Drawing.Point(721, 114);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(200, 26);
-            this.textBox5.TabIndex = 31;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(743, 429);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(152, 81);
-            this.button2.TabIndex = 31;
-            this.button2.Text = "İlan Ver";
-            this.button2.UseVisualStyleBackColor = true;
             // 
             // Form2
             // 

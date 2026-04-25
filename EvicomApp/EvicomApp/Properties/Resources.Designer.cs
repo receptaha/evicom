@@ -63,6 +63,16 @@ namespace EvicomApp.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap türünde yerelleştirilmiş bir kaynak arar.
         /// </summary>
+        internal static System.Drawing.Bitmap ekle {
+            get {
+                object obj = ResourceManager.GetObject("ekle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap türünde yerelleştirilmiş bir kaynak arar.
+        /// </summary>
         internal static System.Drawing.Bitmap kullanici {
             get {
                 object obj = ResourceManager.GetObject("kullanici", resourceCulture);
