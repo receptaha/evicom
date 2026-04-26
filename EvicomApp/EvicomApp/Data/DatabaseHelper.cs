@@ -16,15 +16,55 @@ namespace EvicomApp.Data
         private static string connectionString = $"Data Source={dbPath};Version=3;";
         public static void initializeDatabase()
         {
+            string resultMessage = "";
 
-            if (File.Exists(dbPath))
+            try
             {
-                File.Delete(dbPath);
-            }
+                if (File.Exists(dbPath))
+                {
+                    File.Delete(dbPath);
+                }
 
-            SQLiteConnection.CreateFile(dbPath);
-            createTables();
-            seedDatabase();
+                SQLiteConnection.CreateFile(dbPath);
+                createTables();
+                seedDatabase();
+
+                Dictionary<string, int> dbState = new Dictionary<string, int>();
+                using(var conn = GetConnection())
+                {
+                    conn.Open();
+                    string query = @"SELECT name, seq FROM sqlite_sequence";
+                    using (var cmd = new SQLiteCommand(query, conn))
+                    {
+                        using(var read = cmd.ExecuteReader())
+                        {
+                            while (read.Read())
+                            {
+                                dbState.Add(read.GetString(0), read.GetInt32(1));
+                            }
+                        }
+                    }
+                }
+
+                if(dbState.Count > 0)
+                {
+                    resultMessage += "Veritabanı başarıyla hazırlandı ve veriler yüklendi.";
+                    foreach (var state in dbState)
+                    {
+                        resultMessage += "\n";
+                        resultMessage += $"{state.Key} : {state.Value}";
+                    }
+                    MessageBox.Show(resultMessage, "Başarılı");
+                }else
+                {
+                    MessageBox.Show("Veritabanına hiçbir veri yüklenmedi");
+                }
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"{e.Message}", "Veritabanı Hatası");
+            }
         }
         private static SQLiteConnection GetConnection()
         {
@@ -32,19 +72,26 @@ namespace EvicomApp.Data
         }
         private static void createTables()
         {
-            createUserTable();
-            createCityTable();
-            createCategoryTable();
+            try 
+            {
+                createUserTable();
+                createCityTable();
+                createCategoryTable();
 
-            createDistrictTable();
-            createHouseTable();
-            createAdTable();
-            createHousePropertyTable();
+                createDistrictTable();
+                createHouseTable();
+                createAdTable();
+                createHousePropertyTable();
 
-            createRentalTable();
-            createCommentTable();
-            createLikeTable();
-            createImageTable();
+                createRentalTable();
+                createCommentTable();
+                createLikeTable();
+                createImageTable();
+            }
+            catch(Exception e)
+            {
+                throw new Exception("Tablolar oluşturulurken bir hata meydana geldi: " + e.Message);
+            }
         }
 
         private static void createUserTable()
@@ -128,7 +175,7 @@ namespace EvicomApp.Data
                 conn.Open();
                 string query = @"CREATE TABLE IF NOT EXISTS Ads (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    house_id INTEGER NOT NULL,
+                    house_id INTEGER UNIQUE NOT NULL,
                     title TEXT NOT NULL,
                     price DECIMAL(10,2) NOT NULL,
                     status TEXT DEFAULT 'active',
@@ -228,7 +275,11 @@ namespace EvicomApp.Data
 
         public static void seedDatabase()
         {
-            // DatabaseSeeder.Seed()
+            using(var conn = GetConnection())
+            {
+                conn.Open();
+                DatabaseSeeder.Seed(conn);
+            }
         }
     }
 }
