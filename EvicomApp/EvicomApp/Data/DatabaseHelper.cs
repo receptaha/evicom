@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,5 +14,221 @@ namespace EvicomApp.Data
     {
         private static string dbPath = "evicom.db";
         private static string connectionString = $"Data Source={dbPath};Version=3;";
+        public static void initializeDatabase()
+        {
+
+            if (File.Exists(dbPath))
+            {
+                File.Delete(dbPath);
+            }
+
+            SQLiteConnection.CreateFile(dbPath);
+            createTables();
+            seedDatabase();
+        }
+        private static SQLiteConnection GetConnection()
+        {
+            return new SQLiteConnection(connectionString);
+        }
+        private static void createTables()
+        {
+            createUserTable();
+            createCityTable();
+            createCategoryTable();
+
+            createDistrictTable();
+            createHouseTable();
+            createAdTable();
+            createHousePropertyTable();
+
+            createRentalTable();
+            createCommentTable();
+            createLikeTable();
+            createImageTable();
+        }
+
+        private static void createUserTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    email TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'user',
+                    created_at INTEGER DEFAULT (strftime('%s', 'now'))
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createCityTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "CREATE TABLE IF NOT EXISTS Cities (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE);";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createCategoryTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "CREATE TABLE IF NOT EXISTS Categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE);";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createDistrictTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Districts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    city_id INTEGER NOT NULL,
+                    name TEXT NOT NULL,
+                    FOREIGN KEY (city_id) REFERENCES Cities(id) ON DELETE CASCADE
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createHouseTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Houses (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    owner_id INTEGER NOT NULL,
+                    category_id INTEGER NOT NULL,
+                    district_id INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    full_address TEXT NOT NULL,
+                    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                    FOREIGN KEY (owner_id) REFERENCES Users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (category_id) REFERENCES Categories(id),
+                    FOREIGN KEY (district_id) REFERENCES Districts(id)
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createAdTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Ads (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    house_id INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    price DECIMAL(10,2) NOT NULL,
+                    status TEXT DEFAULT 'active',
+                    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                    FOREIGN KEY (house_id) REFERENCES Houses(id) ON DELETE CASCADE
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createHousePropertyTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS HouseProperties (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    house_id INTEGER NOT NULL,
+                    property_key TEXT NOT NULL,
+                    property_value TEXT NOT NULL,
+                    FOREIGN KEY (house_id) REFERENCES Houses(id) ON DELETE CASCADE
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createRentalTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Rentals (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ad_id INTEGER NOT NULL,
+                    tenant_id INTEGER NOT NULL,
+                    start_date INTEGER,
+                    end_date INTEGER,
+                    total_price DECIMAL(10,2) NOT NULL,
+                    is_active BOOLEAN DEFAULT 1,
+                    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                    FOREIGN KEY (ad_id) REFERENCES Ads(id),
+                    FOREIGN KEY (tenant_id) REFERENCES Users(id)
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createCommentTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Comments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    source_id INTEGER NOT NULL,
+                    source_type TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createLikeTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Likes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    source_id INTEGER NOT NULL,
+                    source_type TEXT NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        private static void createImageTable()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"CREATE TABLE IF NOT EXISTS Images (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    source_id INTEGER NOT NULL,
+                    source_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL,
+                    created_at INTEGER DEFAULT (strftime('%s', 'now'))
+                );";
+                using (var cmd = new SQLiteCommand(query, conn)) cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void seedDatabase()
+        {
+            // DatabaseSeeder.Seed()
+        }
     }
 }

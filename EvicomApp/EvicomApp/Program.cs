@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EvicomApp.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,14 @@ namespace EvicomApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            try
+            {
+                DatabaseHelper.initializeDatabase();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
             Application.Run(new Form1());
         }
     }
