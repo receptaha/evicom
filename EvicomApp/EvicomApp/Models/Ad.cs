@@ -20,5 +20,7 @@ namespace EvicomApp.Models
         public House House { get; set; }
 
         public List<Rental> Rentals { get; set; } = new List<Rental>();
+
+        public static readonly string[] statuses = {"active", "passive"};
     }
 }

@@ -26,5 +26,7 @@ namespace EvicomApp.Models
         public List<HouseProperty> Properties { get; set; } = new List<HouseProperty>();
         public List<Ad> Ads { get; set; } = new List<Ad>();
         public List<Image> Images { get; set; } = new List<Image>();
+
+        public static readonly string[] Categories = { "Daire", "Villa", "Rezidans", "Müstakil", "Apart" };
     }
 }
