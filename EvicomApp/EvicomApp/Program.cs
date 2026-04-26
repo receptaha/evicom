@@ -17,14 +17,7 @@ namespace EvicomApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                DatabaseHelper.initializeDatabase();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Hata: " + ex.Message);
-            }
+            DatabaseHelper.initializeDatabase();
             Application.Run(new Form1());
         }
     }
