@@ -16,5 +16,6 @@ namespace EvicomApp.Models
             public string SourceType { get; set; }
 
             public User User { get; set; }
-        }
+            public static readonly string[] Likeables = { nameof(Ad), nameof(Comment) };
+    }
 }
