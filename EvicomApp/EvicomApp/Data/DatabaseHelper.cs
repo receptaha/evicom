@@ -27,6 +27,7 @@ namespace EvicomApp.Data
 
                 SQLiteConnection.CreateFile(dbPath);
                 createTables();
+                createIndexes();
                 seedDatabase();
 
                 Dictionary<string, int> dbState = new Dictionary<string, int>();
@@ -91,6 +92,36 @@ namespace EvicomApp.Data
             catch(Exception e)
             {
                 throw new Exception("Tablolar oluşturulurken bir hata meydana geldi: " + e.Message);
+            }
+        }
+
+        private static void createIndexes()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                string idxDistrictCity = "CREATE INDEX IF NOT EXISTS idx_district_city ON Districts(city_id);";
+
+                string idxHouseDistrict = "CREATE INDEX IF NOT EXISTS idx_house_district ON Houses(district_id);";
+                string idxHouseCategory = "CREATE INDEX IF NOT EXISTS idx_house_category ON Houses(category_id);";
+
+                string idxAdHouse = "CREATE INDEX IF NOT EXISTS idx_ad_house ON Ads(house_id);";
+                string idxAdPrice = "CREATE INDEX IF NOT EXISTS idx_ad_price ON Ads(price);";
+
+                string idxCommentSource = "CREATE INDEX IF NOT EXISTS idx_comment_source ON Comments(source_type, source_id);";
+                string idxLikeSource = "CREATE INDEX IF NOT EXISTS idx_like_source ON Likes(source_type, source_id);";
+                string idxImageSource = "CREATE INDEX IF NOT EXISTS idx_image_source ON Images(source_type, source_id);";
+
+                string idxRentalDates = "CREATE INDEX IF NOT EXISTS idx_rental_dates ON Rentals(start_date, end_date);";
+
+                string idxPropertyKey = "CREATE INDEX IF NOT EXISTS idx_prop_key ON HouseProperties(property_key);";
+
+                string allIndexes = idxDistrictCity + idxHouseDistrict + idxHouseCategory +
+                                    idxAdHouse + idxAdPrice + idxCommentSource +
+                                    idxLikeSource + idxImageSource + idxRentalDates + idxPropertyKey;
+
+                using (var cmd = new SQLiteCommand(allIndexes, conn)) cmd.ExecuteNonQuery();
             }
         }
 
