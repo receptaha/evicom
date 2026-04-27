@@ -33,7 +33,7 @@ namespace EvicomApp.Data
                     SeedAds(conn, "passive", seedHouseCount / 2);
                     SeedRentals(conn);
                     SeedComments(conn);
-                    //SeedLikes(conn);
+                    SeedLikes(conn);
 
 
                     transaction.Commit();
@@ -346,6 +346,44 @@ namespace EvicomApp.Data
                     string comment = $"Comment for {sourceType} by #{userId} : {j + 1} ";
                     string insertQuery = $"INSERT INTO Comments (user_id, source_id, source_type, content) VALUES ({userId}, {sourceId}, '{sourceType}', '{comment}')";
                     new SQLiteCommand(insertQuery, conn).ExecuteNonQuery();
+                }
+            }
+        }
+
+        private static void SeedLikes(SQLiteConnection conn)
+        {
+            if (conn.State != System.Data.ConnectionState.Open) conn.Open();
+
+            var userIds = new List<int>();
+            using (var cmd = new SQLiteCommand("SELECT id FROM Users", conn))
+            using (var reader = cmd.ExecuteReader())
+                while (reader.Read()) userIds.Add(reader.GetInt32(0));
+
+            foreach (var sourceName in Like.Likeables)
+            {
+                string tableName = sourceName + "s";
+                var sourceIds = new List<int>();
+
+                using (var cmd = new SQLiteCommand($"SELECT id FROM {tableName}", conn))
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read()) sourceIds.Add(reader.GetInt32(0));
+
+                foreach (var sourceId in sourceIds)
+                {
+                    int likeCount = rng.Next(0, 9);
+
+                    var randomUsers = userIds.OrderBy(x => rng.Next()).Take(likeCount).ToList();
+
+                    foreach (var userId in randomUsers)
+                    {
+                        string insertQuery = $"INSERT INTO Likes (user_id, source_id, source_type) " +
+                                             $"VALUES ({userId}, {sourceId}, '{sourceName}')";
+
+                        using (var cmd = new SQLiteCommand(insertQuery, conn))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
         }
