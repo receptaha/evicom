@@ -18,5 +18,6 @@ namespace EvicomApp.Models
         public DateTime CreatedAt { get; set; }
 
         public User User { get; set; }
+        public static readonly string[] Commentables = {nameof(Ad)};
     }
 }
