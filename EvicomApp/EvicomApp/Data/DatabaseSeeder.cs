@@ -23,13 +23,13 @@ namespace EvicomApp.Data
             {
                 try
                 {
-                    SeedUsers(conn, 10);
+                    SeedUsers(conn, 100);
                     SeedCategories(conn);
                     SeedAllTurkey(conn);
-                    SeedHouses(conn, 30);
-                    SeedHousesProperties(conn, 30);
-                    SeedAds(conn, "active", 10);
-                    SeedAds(conn, "passive", 10);
+                    SeedHouses(conn, 100);
+                    SeedHousesProperties(conn, 100);
+                    SeedAds(conn, "active", 50);
+                    SeedAds(conn, "passive", 50);
                     SeedRentals(conn, 50);
 
                     transaction.Commit();
@@ -203,28 +203,29 @@ namespace EvicomApp.Data
         {
             if (conn.State != System.Data.ConnectionState.Open) conn.Open();
 
-            List<int> adIds = new List<int>();
+            List<int> rentableIds = new List<int>();
             List<int> tenantableIds = new List<int>();
 
-            string rentableHousesQuery = "SELECT id FROM Ads WHERE status = 'active'";
-            using (var cmd = new SQLiteCommand(rentableHousesQuery, conn))
+            string rentableAdsQuery = "SELECT id FROM Ads WHERE status = 'active'";
+            using (var cmd = new SQLiteCommand(rentableAdsQuery, conn))
             {
                 using (var reader = cmd.ExecuteReader())
                 {
-                    while (reader.Read()) adIds.Add(reader.GetInt32(0));
+                    while (reader.Read()) rentableIds.Add(reader.GetInt32(0));
                 }
             }
 
-            adIds = adIds.OrderBy(x => rng.Next()).ToList();
+            if (count > rentableIds.Count) throw new Exception($"{count} adet kiralanabilecek aktif ilan bulunamadı, lütfen ilan ekleyiniz.");
+
+            rentableIds = rentableIds.OrderBy(x => rng.Next()).ToList();
 
             for (int i = 0; i < count; i++)
             {
-                int adId = adIds[i % adIds.Count];
+                int adId = rentableIds[i % rentableIds.Count];
                 bool insertable = true;
-                bool isInserted = false;
                 int  attemps = 0;
 
-                while(!isInserted && attemps < 5)
+                while(attemps < 50)
                 {                   
                     DateTime startDate = DateTime.Now.AddDays(rng.Next(1, 30));
                     int rentDay = rng.Next(1, 15);
@@ -256,7 +257,6 @@ namespace EvicomApp.Data
 
                         string insertQuery = $"INSERT INTO Rentals (ad_id, tenant_id, start_date, end_date, total_price) VALUES ({adId}, {tenantId}, {sTimestamp}, {eTimestamp}, {totalPrice})";
                         new SQLiteCommand(insertQuery, conn).ExecuteNonQuery();
-                        break;
                     }
 
                     attemps++;
