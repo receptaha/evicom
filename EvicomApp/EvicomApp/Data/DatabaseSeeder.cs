@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Deployment.Internal;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,7 +19,7 @@ namespace EvicomApp.Data
         public static void Seed(SQLiteConnection conn)
         {
             if (conn.State != System.Data.ConnectionState.Open) conn.Open();
-
+            uint seedHouseCount = 100;
             using (var transaction = conn.BeginTransaction())
             {
                 try
@@ -26,11 +27,14 @@ namespace EvicomApp.Data
                     SeedUsers(conn, 100);
                     SeedCategories(conn);
                     SeedAllTurkey(conn);
-                    SeedHouses(conn, 100);
-                    SeedHousesProperties(conn, 100);
-                    SeedAds(conn, "active", 50);
-                    SeedAds(conn, "passive", 50);
-                    SeedRentals(conn, 50);
+                    SeedHouses(conn, seedHouseCount);
+                    SeedHousesProperties(conn, seedHouseCount);
+                    SeedAds(conn, "active", seedHouseCount / 2);
+                    SeedAds(conn, "passive", seedHouseCount / 2);
+                    SeedRentals(conn);
+                    SeedComments(conn);
+                    //SeedLikes(conn);
+
 
                     transaction.Commit();
                 }
@@ -199,7 +203,7 @@ namespace EvicomApp.Data
             } 
         }
 
-        private static void SeedRentals(SQLiteConnection conn, uint count = 10)
+        private static void SeedRentals(SQLiteConnection conn)
         {
             if (conn.State != System.Data.ConnectionState.Open) conn.Open();
 
@@ -215,11 +219,9 @@ namespace EvicomApp.Data
                 }
             }
 
-            if (count > rentableIds.Count) throw new Exception($"{count} adet kiralanabilecek aktif ilan bulunamadı, lütfen ilan ekleyiniz.");
-
             rentableIds = rentableIds.OrderBy(x => rng.Next()).ToList();
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < rentableIds.Count; i++)
             {
                 int adId = rentableIds[i % rentableIds.Count];
                 bool insertable = true;
@@ -260,6 +262,90 @@ namespace EvicomApp.Data
                     }
 
                     attemps++;
+                }
+            }
+        }
+
+        private static void SeedComments(SQLiteConnection conn)
+        {
+            if (conn.State != System.Data.ConnectionState.Open) conn.Open();
+
+            int userCount = Convert.ToInt32(new SQLiteCommand("SELECT COUNT(*) FROM Users", conn).ExecuteScalar());
+            if (userCount == 0) throw new Exception("Yorum atabilir kullanıcı bulunamadığından yorumlar seed edilemedi!");
+
+            var usersIds = new List<int>();
+            string usersQuery = "SELECT id FROM Users";
+            using (var cmd = new SQLiteCommand(usersQuery, conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) usersIds.Add(reader.GetInt32(0));
+                }
+            }
+
+            foreach (var sourceName in Comment.Commentables)
+            {
+                string modelCountQuery = $"SELECT COUNT(*) FROM {sourceName + "s"}";
+                int modelCount = Convert.ToInt32(new SQLiteCommand(modelCountQuery, conn).ExecuteScalar());
+
+                if (modelCount == 0) throw new Exception("Yorum atılabilir veri bulunamadığından" + sourceName + " için yorumlar seed edilemedi!");
+                else
+                {
+                    var sourceIds = new List<int>();
+                    var sourceQuery = $"SELECT id FROM {sourceName + "s"}";
+
+                    using (var cmd = new SQLiteCommand(sourceQuery, conn))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read()) sourceIds.Add(reader.GetInt32(0));
+                        }
+                    }
+
+                    for (int i = 0; i < modelCount; i++) // Her bir Model(Ad, Comment) için yorum atılıyor.
+                    {
+                        int commentCountPerModel = rng.Next(1, 5);
+                        int sourceId = sourceIds[i];
+                        string sourceType = sourceName;
+                        for(int j = 0; j < commentCountPerModel; j++)
+                        {
+                            int userId = usersIds[rng.Next(usersIds.Count)];
+                            string comment = $"Comment for {sourceType} by #{userId} : {j + 1} ";
+
+                            string insertQuery = $"INSERT INTO Comments (user_id, source_id, source_type, content) VALUES ({userId}, {sourceId}, '{sourceType}', '{comment}')";
+                            new SQLiteCommand(insertQuery, conn).ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            // Tüm commentler bittikten sonra her commente de 1-3 arası yorum atılsın.
+
+            int commentCount = Convert.ToInt32(new SQLiteCommand("SELECT COUNT(*) FROM Comments", conn).ExecuteScalar());
+            if (commentCount == 0) throw new Exception("Hiçbir yorum bulunamadığı için, yoruma yorum seed edilemedi!");
+
+            var commentIds = new List<int>();
+            var commentQuery = $"SELECT id FROM Comments";
+
+            using (var cmd = new SQLiteCommand(commentQuery, conn))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) commentIds.Add(reader.GetInt32(0));
+                }
+            }
+
+            for (int i = 0; i < commentCount; i++)
+            {
+                // Her bir yoruma da 1-3 arası yorum atılacak.
+                int commentPerComment = rng.Next(1, 3);
+                int sourceId = commentIds[i];
+                string sourceType = nameof(Comment);
+                for (int j = 0; j < commentPerComment; j++)
+                {
+                    int userId = usersIds[rng.Next(usersIds.Count)];
+                    string comment = $"Comment for {sourceType} by #{userId} : {j + 1} ";
+                    string insertQuery = $"INSERT INTO Comments (user_id, source_id, source_type, content) VALUES ({userId}, {sourceId}, '{sourceType}', '{comment}')";
+                    new SQLiteCommand(insertQuery, conn).ExecuteNonQuery();
                 }
             }
         }
