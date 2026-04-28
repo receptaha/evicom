@@ -8,3 +8,6 @@
 
 *.sqlite
 *.db
+packages/
+
+EvicomApp/EvicomApp/Uploads/*
