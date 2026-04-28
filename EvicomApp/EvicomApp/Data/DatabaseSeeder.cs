@@ -34,7 +34,7 @@ namespace EvicomApp.Data
                     SeedRentals(conn);
                     SeedComments(conn);
                     SeedLikes(conn);
-
+                    SeedImages(conn);
 
                     transaction.Commit();
                 }
@@ -383,6 +383,36 @@ namespace EvicomApp.Data
                         {
                             cmd.ExecuteNonQuery();
                         }
+                    }
+                }
+            }
+        }
+
+        private static void SeedImages(SQLiteConnection conn)
+        {
+            if (conn.State != System.Data.ConnectionState.Open) conn.Open();
+
+            foreach(var sourceName in Image.Imageables)
+            {
+                string tableName = sourceName + "s";
+                var sourceIds = new List<int>();
+
+                using (var cmd = new SQLiteCommand($"SELECT id FROM {tableName}", conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) sourceIds.Add(reader.GetInt32(0));
+                }
+                    
+                foreach (var sourceId in sourceIds)
+                {
+                    int imgCount = sourceName == nameof(User) ? 1 : rng.Next(2, 5);
+                    for(int i = 0; i < imgCount; i++)
+                    {
+                        string imagePath = $"https://loremflickr.com/640/480/{sourceName}/all?lock={sourceId * 10 + i}";
+                        string insertQuery = $"INSERT INTO Images (source_id, source_type, image_path) " +
+                                             $"VALUES ({sourceId}, '{sourceName}', '{imagePath}')";
+                        new SQLiteCommand(insertQuery, conn).ExecuteNonQuery();
+                        
                     }
                 }
             }

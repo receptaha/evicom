@@ -16,5 +16,8 @@ namespace EvicomApp.Models
         public string ImagePath { get; set; }
         public bool IsMain { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public static readonly string[] Imageables = { nameof(User), nameof(House) };
+
     }
 }
