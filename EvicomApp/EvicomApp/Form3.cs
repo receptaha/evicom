@@ -41,10 +41,18 @@ namespace EvicomApp
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            if (dateTimePicker1.Value > dateTimePicker2.Value)
-            {
-                dateTimePicker2.MinDate = dateTimePicker1.Value;
-            }
+            dateTimePicker2.MinDate = dateTimePicker1.Value;
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Form11 yeni = new Form11();
+            yeni.ShowDialog();
         }
     }
 }

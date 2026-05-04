@@ -11,23 +11,16 @@ using System.Windows.Forms;
 
 namespace EvicomApp
 {
-    public partial class Form2 : Form
+    public partial class Form9 : Form
     {
-        public Form2()
+        public Form9()
         {
             InitializeComponent();
         }
-        private bool adminMi = false;
+
         private string hedefKlasor = Path.Combine(Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\")), "Resim");
         private string uzanti;
         private string hedefResimYolu;
-        private bool resimGirildiMi = false;
-
-        public void setAdmin()
-        {
-            adminMi = true;
-            label1.Text = "Admin";
-        }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -39,13 +32,12 @@ namespace EvicomApp
                 uzanti = Path.GetExtension(yeni.FileName);
                 hedefResimYolu = Path.GetFullPath(yeni.FileName);
                 pictureBox1.Image = Image.FromFile(yeni.FileName);
-                resimGirildiMi= true;
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(resimGirildiMi == true)
+            if (pictureBox1.Image != null)
             {
                 try
                 {
@@ -69,6 +61,11 @@ namespace EvicomApp
             {
                 MessageBox.Show("Lütfen bilgileri giriniz");
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
         }
     }
 }

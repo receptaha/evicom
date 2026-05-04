@@ -16,5 +16,23 @@ namespace EvicomApp
         {
             InitializeComponent();
         }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Form8 yeni = new Form8();
+            yeni.ShowDialog();
+        }
+
+        private void dataGridView3_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Form9 yeni = new Form9();
+            yeni.ShowDialog();
+        }
+
+        private void dataGridView2_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Form10 yeni = new Form10();
+            yeni.ShowDialog();
+        }
     }
 }
